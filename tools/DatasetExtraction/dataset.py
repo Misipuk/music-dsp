@@ -35,7 +35,7 @@ class Dataset:
     #returns vector with probabilities (dtype np array)
     def get_hmm_matrix_i(self):
         self.song_list = self.load(self.dir_path)
-        i_matrix = np.array(len(self.chord_id), dtype=float)
+        i_matrix = np.zeros(len(self.chord_id), dtype=float)
         for song in self.song_list:
             i_matrix[self.chord_id.get(song.chords_list[
                                       0].label)] += 1
@@ -48,7 +48,7 @@ class Dataset:
         remainder = 0.0
         drtn = 0.0
         w_cnt = 0.0
-        t_matrix = np.array((len(self.chord_id), len(self.chord_id)), dtype=float)
+        t_matrix = np.zeros((len(self.chord_id), len(self.chord_id)), dtype=float)
 
         for song_i in self.song_list:
             t_matrix[self.chord_id.get(song_i[-1].label)][  # analyze last elem
@@ -69,6 +69,11 @@ class Dataset:
 
                 t_matrix[self.chord_id.get(curr_chord.label)][    #self trasition
                     self.chord_id.get(curr_chord.label)] += w_cnt
+
+                w_cnt = 0.0
+
+                if (remainder < self.window_size / 2):
+                    w_cnt = + 1
 
                 t_matrix[self.chord_id.get(curr_chord.label.label)][    #chord changing transition
                     self.chord_id.get(song_i.chords_list[j + 1].label)] += 1
